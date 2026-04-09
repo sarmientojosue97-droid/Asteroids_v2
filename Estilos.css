@@ -1,0 +1,26 @@
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #000; 
+    color: #fff;                  
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;                 
+    font-family: 'Courier New', Courier, monospace;
+}
+
+
+#lienzo_principal {
+    border: 2px solid #fff;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+
+#panel_puntuacion {
+    margin-bottom: 10px;
+    font-size: 24px;
+    font-weight: bold;
+}
