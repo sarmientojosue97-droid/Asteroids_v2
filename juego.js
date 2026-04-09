@@ -16,6 +16,12 @@ window.addEventListener('keydown', (evento) => {
 
 window.addEventListener('keyup', (evento) => {
     registro_teclas_precionadas[evento.code] = false;
+
+    if(evento.code == 'Space'){
+        lista_disparos_activos.push(
+            new clase_molde_disparo(nave_jugador.x, nave_jugador.y, nave_jugador.angulo)
+        );
+    }
 })
 
 
@@ -128,10 +134,44 @@ class clase_molde_asteroides{
 
 
 
+class clase_molde_disparo{
+    
+    constructor(x_origen, y_origen, angulo_origen){
+        this.x = x_origen;
+        this.y = y_origen;
+
+        this.velocidad_x = (Math.cos(angulo_origen)) * 7;
+        this.velocidad_y = (Math.sin(angulo_origen)) * 7;
+
+        this.radio = 3;
+        this.tiempo_vida = 60;
+    }
+
+    actulizar_logica(){
+        this.x += this.velocidad_x;
+        this.y += this.velocidad_y;
+        this.tiempo_vida --;
+    }
+
+    dibujar(){
+        contexto_dibujo.beginPath();
+        contexto_dibujo.arc(this.x, this.y, this.radio, 0, Math.PI * 2);
+        contexto_dibujo.fillStyle = 'yellow'
+        contexto_dibujo.fill();
+    }
+}
+
+
+
+
+
+
 
 // ---- hacemos correr
 const nave_jugador = new clase_molde_nave();
 const lista_asteroides_vivos = [];
+let lista_disparos_activos = [];
+
 
 for(let i = 0; i < 5; i++){
     lista_asteroides_vivos.push(new clase_molde_asteroides());
@@ -142,7 +182,13 @@ for(let i = 0; i < 5; i++){
 
 function actulizar_logica_matematica(){
     nave_jugador.actulizar_logica();
+    
+    lista_disparos_activos.forEach(disparo => disparo.actulizar_logica());
+
+    lista_disparos_activos = lista_disparos_activos.filter(disparo => disparo.tiempo_vida > 0);
+    
     lista_asteroides_vivos.forEach(asteroide => asteroide.actulizar_logica());
+
 }
 
 
@@ -153,6 +199,7 @@ function dibujar_fotograma_actual(){
     contexto_dibujo.clearRect(0, 0, lienzo_principal.width, lienzo_principal.height);
 
     lista_asteroides_vivos.forEach(asteroide => asteroide.dibujar());
+    lista_disparos_activos.forEach(disparo => disparo.dibujar());
     nave_jugador.dibujar();
 }
 
