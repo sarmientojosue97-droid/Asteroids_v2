@@ -5,6 +5,24 @@ const contexto_dibujo = lienzo_principal.getContext('2d');
 
 
 
+
+//--- dinamica
+const registro_teclas_precionadas  = {};
+
+window.addEventListener('keydown', (evento) => {
+    registro_teclas_precionadas[evento.code] = true;
+})
+
+
+window.addEventListener('keyup', (evento) => {
+    registro_teclas_precionadas[evento.code] = false;
+})
+
+
+
+
+
+
 // ------- NAVES
 class clase_molde_nave{
 
@@ -13,9 +31,38 @@ class clase_molde_nave{
         this.y = (lienzo_principal.height) / 2;
         this.angulo = (-Math.PI) / 2;
         this.radio = 15;
+
+        this.velocidad_x = 0;
+        this.velocidad_y = 0;
     }
 
-    dibujar(){
+    actulizar_logica(){
+
+        //Rotar
+        if(registro_teclas_precionadas['ArrowLeft']) this.angulo -= 0.05;
+        if(registro_teclas_precionadas['ArrowRight']) this.angulo += 0.05;
+
+        //adelante
+        if(registro_teclas_precionadas['ArrowUp']){
+            this.velocidad_x += (Math.cos(this.angulo)) * 0.15;
+            this.velocidad_y += (Math.sin(this.angulo)) * 0.15;
+        }
+
+        this.velocidad_x *= 0.99;
+        this.velocidad_y *= 0.99;
+
+        this.x += this.velocidad_x;
+        this.y += this.velocidad_y;
+
+        if (this.x < 0)  this.x = lienzo_principal.width;
+        if (this.x > lienzo_principal.width) this.x = 0;
+        if (this.y < 0)  this.y = lienzo_principal.height;
+        if (this.y > lienzo_principal.height) this.y = 0;
+    }
+
+
+
+    dibujar() {
         
         contexto_dibujo.save();
 
@@ -48,7 +95,27 @@ class clase_molde_asteroides{
         this.x = Math.random() < 0.5 ? 80 : (lienzo_principal.width) - 80;
         this.y = Math.random() * lienzo_principal.height;
         this.radio = Math.random() * 20 + 20;
+
+        const angulo_aleatorio = Math.random() * Math.PI * 2;
+        const velocidad_aletoria = Math.random() * 1.5 + 0.5;
+
+        this.velocidad_x = Math.cos(angulo_aleatorio) * velocidad_aletoria;
+        this.velocidad_y = Math.sin(angulo_aleatorio) * velocidad_aletoria;
     }
+
+
+    actulizar_logica(){
+            
+        this.x += this.velocidad_x;
+        this.y += this.velocidad_y;
+
+        if (this.x < -this.radio)   this.x = lienzo_principal.width  + this.radio;
+        if (this.x > lienzo_principal.width  + this.radio)  this.x = -this.radio;
+        if (this.y < -this.radio)    this.y = lienzo_principal.height + this.radio;
+        if (this.y > lienzo_principal.height + this.radio)  this.y = -this.radio;
+
+    }
+
 
     dibujar(){
         contexto_dibujo.beginPath();
@@ -73,6 +140,11 @@ for(let i = 0; i < 5; i++){
 
 
 
+function actulizar_logica_matematica(){
+    nave_jugador.actulizar_logica();
+    lista_asteroides_vivos.forEach(asteroide => asteroide.actulizar_logica());
+}
+
 
 
 
@@ -86,6 +158,7 @@ function dibujar_fotograma_actual(){
 
 
 function bucle_principal_juego(){
+    actulizar_logica_matematica();
     dibujar_fotograma_actual();
     requestAnimationFrame(bucle_principal_juego);
 }
