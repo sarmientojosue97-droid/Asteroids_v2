@@ -6,14 +6,8 @@ class Controlador_Juego{
 
         this.vista = new Vista_Juego(lienzo);
 
-        this.nave = new Modelo_Nave(lienzo.width, lienzo.height);
-        this.asteroides = [];
-        this.disparos = [];
-        this.puntos = 0;
-
-        for(let i = 0; i < 5; i++){
-            this.asteroides.push(new Modelo_Asteroide(lienzo.width, lienzo.height));
-        }
+        this.modelo = new Modelo_Juego(lienzo.width, lienzo.height);
+        this.vista  = new Vista_Juego(lienzo);
 
         this.teclas = {};
         this._registrar_Entrada();
@@ -22,52 +16,65 @@ class Controlador_Juego{
     _registrar_Entrada(){
         window.addEventListener('keydown', (evento) => {
             this.teclas[evento.code] = true;
+
+            if (this.modelo.estado === 'GAMEOVER' && evento.code === 'Enter') {
+                this.modelo.reiniciar();
+            }
         });
 
         window.addEventListener('keyup', (evento) => {
             this.teclas[evento.code] = false;
 
-            if(evento.code === 'Space'){
-                this.disparos.push(new Modelo_Disparo(this.nave.x, this.nave.y, this.nave.angulo));
+            if (evento.code === 'Space' && this.modelo.estado === 'JUGANDO') {
+                const nave = this.modelo.nave;
+
+                this.modelo.disparos.push(new Modelo_Disparo(nave.x, nave.y, nave.angulo));
             }
         });
     }
 
     _actualizar_Logica(){
 
-        this.nave.actualizar_Logica(this.teclas);
+        if (this.modelo.estado !== 'JUGANDO') return;
 
-        this.disparos.forEach(d => d.actualizar_Logica());
-        this.asteroides.forEach(a => a.actualizar_Logica());
-        this.disparos = this.disparos.filter(d => d.esta_vivo());
+        const m = this.modelo;
 
+        m.nave.actualizar_Logica(this.teclas);
+        m.disparos.forEach(d  => d.actualizar_Logica());
+        m.asteroides.forEach(a => a.actualizar_Logica());
+        m.disparos = m.disparos.filter(d => d.esta_vivo());
+ 
         this._detectar_Colisiones();
     }
 
 
     _detectar_Colisiones() {
-        for (let i = this.asteroides.length - 1; i >= 0; i--) {
-            const ast = this.asteroides[i];
+
+        const m = this.modelo;
+
+        for (let i = m.asteroides.length - 1; i >= 0; i--) {
+            const ast = m.asteroides[i];
  
-            for (let j = this.disparos.length - 1; j >= 0; j--) {
-                const dis = this.disparos[j];
+            const distancia_nave = Math.hypot(m.nave.x - ast.x, m.nave.y - ast.y);
+            if (distancia_nave < m.nave.radio + ast.radio) {
+                m.estado = 'GAMEOVER';
+                return;
+            }
  
-                const distancia = Math.hypot(dis.x - ast.x, dis.y - ast.y);
+            for (let j = m.disparos.length - 1; j >= 0; j--) {
+                const dis = m.disparos[j];
+                const distancia_disparo = Math.hypot(dis.x - ast.x, dis.y - ast.y);
  
-                if (distancia < dis.radio + ast.radio) {
-                    this.disparos.splice(j, 1); 
-                    this.asteroides.splice(i, 1);
+                if (distancia_disparo < dis.radio + ast.radio) {
+                    m.disparos.splice(j, 1);
+                    m.asteroides.splice(i, 1);
+                    m.puntos += 100;
  
-                    this.puntos += 100;
- 
-                    if (this.asteroides.length === 0) {
+                    if (m.asteroides.length === 0) {
                         for (let k = 0; k < 7; k++) {
-                            this.asteroides.push(
-                                new Modelo_Asteroide(this.lienzo.width, this.lienzo.height)
-                            );
+                            m.asteroides.push(new Modelo_Asteroide(m.ancho, m.alto));
                         }
                     }
- 
                     break;
                 }
             }
@@ -76,7 +83,7 @@ class Controlador_Juego{
 
 
     _actualizar_Vista(){
-        this.vista.dibujar_Escena(this.nave, this.asteroides, this.disparos);
+        this.vista.dibujar_Escena(this.modelo);
     }
 
     _actualizar_Puntuacion(){

@@ -69,6 +69,7 @@ class Modelo_Asteroide{
     
 }
 
+
 class Modelo_Disparo{
 
     constructor(x_Origen, y_Origen, angulo_Origen){
@@ -90,5 +91,32 @@ class Modelo_Disparo{
 
     esta_vivo(){
         return this.tiempo_Vida;
+    }
+}
+
+class Modelo_Juego {
+
+    constructor(ancho, alto){
+        this.ancho = ancho;
+        this.alto = alto;
+        this.estado = 'JUGANDO';
+        this.puntos = 0;
+        this._crear_Objetos();
+    }
+
+    _crear_Objetos(){
+        this.nave = new Modelo_Nave(this.ancho, this.alto);
+        this.asteroides = []
+        this.disparos = [];
+
+        for (let i = 0; i < 5; i++) {
+            this.asteroides.push(new Modelo_Asteroide(this.ancho, this.alto));
+        }
+    }
+
+    reiniciar() {
+        this.puntos = 0;
+        this.estado = 'JUGANDO';
+        this._crear_Objetos();
     }
 }
