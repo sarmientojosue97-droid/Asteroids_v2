@@ -20,8 +20,8 @@ class Vista_Juego{
         this.ctx.lineTo(-15, -15);
         this.ctx.closePath();
 
-        this.ctx.strokeStyle = 'white';
-        this.ctx.lineWidth   = 2;
+        this.ctx.strokeStyle = modelo.es_invulnerable ? 'cyan' : 'white';
+        this.ctx.lineWidth = 2;
         this.ctx.stroke();
 
         this.ctx.restore();
@@ -41,34 +41,84 @@ class Vista_Juego{
         this.ctx.fill();
     }
 
-    dibujar_GameOver(puntos) {
+    dibujar_Cargando(){
+        this.ctx.textAlign = 'center';
+
+        this.ctx.fillStyle = 'white';
+        this.ctx.font = '26px Courier New';
+        this.ctx.fillText('CARGANDO...', this.lienzo.width / 2, 280);
+
+        this.ctx.fillStyle = '#666'
+        this.ctx.font = '14px Courier New'
+        this.ctx.fillText('(simulando carga de recursos 2 segundos)', this.lienzo.width / 2, 320);
+
+        this.ctx.textAlign = 'left';
+    }
+
+    dibujar_GameOver(puntos, top_puntajes) {
+        this.ctx.textAlign = 'center';
+        const cx = this.lienzo.width / 2;
 
         this.ctx.fillStyle = 'red';
-        this.ctx.font      = '50px Courier New';
-        this.ctx.textAlign = 'center';
-        this.ctx.fillText('GAME OVER', this.lienzo.width / 2, 250);
+        this.ctx.font = '50px Courier New';
+        this.ctx.fillText('GAME OVER', cx, 250);
  
         this.ctx.fillStyle = 'white';
-        this.ctx.font      = '24px Courier New';
-        this.ctx.fillText('Puntaje final: ' + puntos, this.lienzo.width / 2, 295);
+        this.ctx.font = '22px Courier New';
+        this.ctx.fillText('Puntaje: ' + puntos, cx, 205)
+        
+        this.ctx.strokeStyle = '#444';
+        this.ctx.lineWidth   = 1;
+        this.ctx.beginPath();
+        this.ctx.moveTo(cx - 180, 225);
+        this.ctx.lineTo(cx + 180, 225);
+        this.ctx.stroke();
+
+        this.ctx.fillStyle = '#FFD700'; // dorado
+        this.ctx.font = '16px Courier New';
+        this.ctx.fillText('TOP 4 PUNTAJES', cx, 252);
+
+
+        if (top_puntajes.length === 0) {
+
+            this.ctx.fillStyle = '#666';
+            this.ctx.font      = '14px Courier New';
+            this.ctx.fillText('(sin partidas anteriores)', cx, 280);
+        } else {
+            top_puntajes.forEach((registro, indice) => {
+                const y = 278 + indice * 26;
  
-        this.ctx.font = '18px Courier New';
-        this.ctx.fillText('Presiona ENTER para reiniciar', this.lienzo.width / 2, 330);
+                this.ctx.fillStyle = indice === 0 ? '#FFD700' : '#aaa';
+                this.ctx.font      = '15px Courier New';
+                this.ctx.fillText(
+                    (indice + 1) + '.   ' + registro.puntaje + ' pts   ' + registro.fecha, cx, y );
+            });
+        }
+ 
+        this.ctx.fillStyle = 'white';
+        this.ctx.font      = '16px Courier New';
+        this.ctx.fillText('presiona ENTER para seguir jugando', cx, 400);
  
         this.ctx.textAlign = 'left';
+
     }
  
     dibujar_Escena(modelo) {
         this.limpiar_Lienzo();
+
+        if(modelo.estado == 'CARANDO'){
+            this.dibujar_Cargando();
+            return;
+        }
  
         modelo.asteroides.forEach(a => this.dibujar_Asteroide(a));
-        modelo.disparos.forEach(d   => this.dibujar_Disparo(d));
+        modelo.disparos.forEach(d => this.dibujar_Disparo(d));
  
         if (modelo.estado === 'JUGANDO') {
             this.dibujar_Nave(modelo.nave);
  
         } else if (modelo.estado === 'GAMEOVER') {
-            this.dibujar_GameOver(modelo.puntos);
+            this.dibujar_GameOver(modelo.puntos, modelo.top_puntajes);
         }
     }
 }

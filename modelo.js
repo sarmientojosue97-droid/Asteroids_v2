@@ -12,6 +12,12 @@ class Modelo_Nave {
         this.radio       = 15;
         this.velocidad_x = 0;
         this.velocidad_y = 0;
+        
+        // Macro tarea 
+        this.es_invulnerable = true;
+
+        setTimeout(() => {this.es_invulnerable = false}, 3000);
+    
     }
 
     actualizar_Logica(teclas) {
@@ -90,7 +96,7 @@ class Modelo_Disparo{
     }
 
     esta_vivo(){
-        return this.tiempo_Vida;
+        return this.tiempo_Vida > 0;
     }
 }
 
@@ -99,24 +105,36 @@ class Modelo_Juego {
     constructor(ancho, alto){
         this.ancho = ancho;
         this.alto = alto;
-        this.estado = 'JUGANDO';
+
+        this.estado = 'CARGANDO';
+
         this.puntos = 0;
+        this.top_puntajes = [];
+
+        this.nave = null;
+        this.asteroides = [];
+        this.disparos = [];
+    }
+
+    iniciar(){
+        this.puntos = 0;
+        this.estado = 'JUGANDO';
+        this._crear_Objetos();
+    }
+
+    reiniciar(){
+        this.puntos = 0;
+        this.estado = 'JUGANDO';
         this._crear_Objetos();
     }
 
     _crear_Objetos(){
         this.nave = new Modelo_Nave(this.ancho, this.alto);
-        this.asteroides = []
+        this.asteroides = [];
         this.disparos = [];
 
         for (let i = 0; i < 5; i++) {
             this.asteroides.push(new Modelo_Asteroide(this.ancho, this.alto));
         }
-    }
-
-    reiniciar() {
-        this.puntos = 0;
-        this.estado = 'JUGANDO';
-        this._crear_Objetos();
     }
 }
