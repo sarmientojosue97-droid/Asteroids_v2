@@ -13,7 +13,6 @@ class Modelo_Nave {
         this.velocidad_x = 0;
         this.velocidad_y = 0;
         
-        // Macro tarea 
         this.es_invulnerable = true;
 
         setTimeout(() => {this.es_invulnerable = false}, 3000);
@@ -127,6 +126,7 @@ class Modelo_Juego {
         this.estado = 'JUGANDO';
         this._crear_Objetos();
     }
+
 
     _crear_Objetos(){
         this.nave = new Modelo_Nave(this.ancho, this.alto);

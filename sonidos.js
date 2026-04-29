@@ -2,90 +2,74 @@ class Sonidos_Juego {
  
     constructor() {
 
-        this.ctx_audio = null;
+        this.estudio_de_audio= null;
     }
  
     _asegurar_Contexto() {
-        if (!this.ctx_audio) {
-            this.ctx_audio = new AudioContext();
+        if (!this.estudio_de_audio) {
+            this.estudio_de_audio = new AudioContext();
         }
     }
  
-
     disparo() {
         this._asegurar_Contexto();
  
-        const oscilador = this.ctx_audio.createOscillator();
-        const volumen   = this.ctx_audio.createGain();
+        const oscilador = this.estudio_de_audio.createOscillator();
+        const volumen = this.estudio_de_audio.createGain();
  
         oscilador.connect(volumen);
-        volumen.connect(this.ctx_audio.destination);
+        volumen.connect(this.estudio_de_audio.destination);
  
         oscilador.frequency.value = 880;
  
 
-        volumen.gain.setValueAtTime(0.25, this.ctx_audio.currentTime);
-        volumen.gain.exponentialRampToValueAtTime(0.001, this.ctx_audio.currentTime + 0.1);
+        volumen.gain.setValueAtTime(5, this.estudio_de_audio.currentTime);
+        volumen.gain.exponentialRampToValueAtTime(0.001, this.estudio_de_audio.currentTime + 0.1);
  
         oscilador.start();
-        oscilador.stop(this.ctx_audio.currentTime + 0.1);
+        oscilador.stop(this.estudio_de_audio.currentTime + 0.1);
     }
  
 
     explosion() {
         this._asegurar_Contexto();
  
-
-        const cantidad_muestras = Math.floor(this.ctx_audio.sampleRate * 0.2);
+        const oscilador = this.estudio_de_audio.createOscillator();
+        const volumen = this.estudio_de_audio.createGain();
  
+        oscilador.connect(volumen);
+        volumen.connect(this.estudio_de_audio.destination);
  
-        const buffer = this.ctx_audio.createBuffer(
-            1,                          
-            cantidad_muestras,
-            this.ctx_audio.sampleRate
-        );
-
-        const datos = buffer.getChannelData(0);
-        for (let i = 0; i < cantidad_muestras; i++) {
-            datos[i] = Math.random() * 2 - 1;
-        }
+        oscilador.frequency.value = 150;
  
-        const fuente  = this.ctx_audio.createBufferSource();
-        fuente.buffer = buffer;
- 
-        const volumen = this.ctx_audio.createGain();
-        volumen.gain.setValueAtTime(0.4, this.ctx_audio.currentTime);
-        volumen.gain.exponentialRampToValueAtTime(0.001, this.ctx_audio.currentTime + 0.2);
- 
-        fuente.connect(volumen);
-        volumen.connect(this.ctx_audio.destination);
-        fuente.start();
+        volumen.gain.setValueAtTime(7, this.estudio_de_audio.currentTime);
+        volumen.gain.exponentialRampToValueAtTime(0.001, this.estudio_de_audio.currentTime+ 0.1);
+        oscilador.start();
+        oscilador.stop(this.estudio_de_audio.currentTime + 0.1);
     }
  
 
     game_over() {
         this._asegurar_Contexto();
- 
 
-        const notas = [440, 330, 220];
+        const notas =[440, 330, 220];
  
         notas.forEach((frecuencia, indice) => {
-            const oscilador = this.ctx_audio.createOscillator();
-            const volumen   = this.ctx_audio.createGain();
+            const oscilador= this.estudio_de_audio.createOscillator();
+            const volumen = this.estudio_de_audio.createGain();
  
             oscilador.connect(volumen);
-            volumen.connect(this.ctx_audio.destination);
+            volumen.connect(this.estudio_de_audio.destination);
  
             oscilador.frequency.value = frecuencia;
  
-
-            const cuando = this.ctx_audio.currentTime + indice * 0.35;
+            const cuando = this.estudio_de_audio.currentTime +indice * 0.35;
  
-            volumen.gain.setValueAtTime(0.3, cuando);
-            volumen.gain.exponentialRampToValueAtTime(0.001, cuando + 0.3);
+            volumen.gain.setValueAtTime(4, cuando);
+            volumen.gain.exponentialRampToValueAtTime(0.001, cuando + 1);
  
             oscilador.start(cuando);
-            oscilador.stop(cuando + 0.35);
+            oscilador.stop(cuando + 1);
         });
     }
 }
