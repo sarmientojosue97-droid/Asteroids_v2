@@ -1,9 +1,8 @@
 
+const lienzo_principal =document.getElementById('lienzo_principal');
+const ver_puntos = document.getElementById('texto_puntos');
 
-const lienzo_principal = document.getElementById('lienzo_principal');
-const texto_puntos= document.getElementById('texto_puntos');
-
-class Controlador_Juego {
+class controlador_juego {
 
     constructor(lienzo, elementos_Puntos) {
         this.lienzo= lienzo;
@@ -16,11 +15,11 @@ class Controlador_Juego {
         this.base_de_datos = new PouchDB('asteroids_db');
 
         this.teclas = {};
-        this.registrar_Entrada();
+        this.registrar_entrada();
         this.modelo.iniciar();
     }
 
-    async guardar_y_Cargar_Puntajes() {
+    async guardar_cargar_puntajes () {
         try {
             const nuevo_registro = {
                 _id: new Date().toISOString(), 
@@ -37,12 +36,11 @@ class Controlador_Juego {
             this.modelo.top_puntajes = todos_los_puntajes.slice(0, 4);
 
         } catch (error) {
-            console.error('Error con la base de datos:', error);
+            console.error('erorr con la base de datos:', error);
         }
     }
 
-
-    registrar_Entrada() {
+    registrar_entrada() {
         window.addEventListener('keydown', (evento) => {
             this.teclas[evento.code] = true;
 
@@ -64,50 +62,50 @@ class Controlador_Juego {
     }
 
 
-    actualizar_Logica() {
+    actualizar_logica() {
         if (this.modelo.estado !== 'JUGANDO') return;
 
-        const m = this.modelo;
+        const mi_caijta= this.modelo;
 
-        m.nave.actualizar_Logica(this.teclas);
-        m.disparos.forEach(d=> d.actualizar_Logica());
-        m.asteroides.forEach(a => a.actualizar_Logica());
-        m.disparos = m.disparos.filter(d => d.esta_vivo());
+        mi_caijta.nave.actualizar_logica(this.teclas);
+        mi_caijta.disparos.forEach(d=> d.actualizar_logica());
+        mi_caijta.asteroides.forEach(a => a.actualizar_logica());
+        mi_caijta.disparos = mi_caijta.disparos.filter(d => d.esta_vivo());
 
-        this.   detectar_Colisiones();
+        this.detectar_Colisiones();
     }
 
     detectar_Colisiones() {
-        const m = this.modelo;
+        const mi_caijta=this.modelo;
 
-        for (let i = m.asteroides.length - 1; i >= 0; i--) {
-            const ast = m.asteroides[i];
+        for (let i = mi_caijta.asteroides.length - 1; i >= 0; i--) {
+            const ast = mi_caijta.asteroides[i];
 
-            if (!m.nave.es_invulnerable) {
-                const dist_nave = Math.hypot(m.nave.x - ast.x, m.nave.y - ast.y);
-                if (dist_nave < m.nave.radio + ast.radio) {
-                    m.estado = 'GAMEOVER';
+            if (!mi_caijta.nave.es_invulnerable) {
+                const dist_nave = Math.hypot(mi_caijta.nave.x - ast.x, mi_caijta.nave.y - ast.y);
+                if (dist_nave < mi_caijta.nave.radio + ast.radio) {
+                    mi_caijta.estado = 'GAMEOVER';
                     this.sonidos.game_over();
 
-                    this.guardar_y_Cargar_Puntajes();
+                    this.guardar_cargar_puntajes();
                     return;
                 }
             }
 
-            for (let j = m.disparos.length - 1; j >= 0; j--) {
-                const dis = m.disparos[j];
+            for (let j = mi_caijta.disparos.length - 1; j >= 0; j--) {
+                const dis = mi_caijta.disparos[j];
                 const dist_disparo = Math.hypot(dis.x - ast.x, dis.y - ast.y);
 
                 if (dist_disparo < dis.radio + ast.radio) {
-                    m.disparos.splice(j, 1);
-                    m.asteroides.splice(i, 1);
-                    m.puntos += 100;
+                    mi_caijta.disparos.splice(j, 1);
+                    mi_caijta.asteroides.splice(i, 1);
+                    mi_caijta.puntos += 100;
 
                     this.sonidos.explosion();
 
-                    if (m.asteroides.length === 0) {
+                    if (mi_caijta.asteroides.length === 0) {
                         for (let k = 0; k < 7; k++) {
-                            m.asteroides.push(new Modelo_Asteroide(m.ancho, m.alto));
+                            mi_caijta.asteroides.push(new Modelo_Asteroide(mi_caijta.ancho, mi_caijta.alto));
                         }
                     }
                     break;
@@ -124,10 +122,9 @@ class Controlador_Juego {
         this.elementos_Puntos.textContent = this.modelo.puntos;
     }
 
-
     iniciar() {
         const bucle = () => {
-            this.actualizar_Logica();
+            this.actualizar_logica();
             this.actualizar_Vista();
             this.actualizar_Puntuacion();
             requestAnimationFrame(bucle);
@@ -136,5 +133,5 @@ class Controlador_Juego {
     }
 }
 
-const juego = new Controlador_Juego(lienzo_principal, texto_puntos);
+const juego = new controlador_juego (lienzo_principal, ver_puntos);
 juego.iniciar();

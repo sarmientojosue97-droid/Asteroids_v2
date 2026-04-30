@@ -4,12 +4,12 @@ class Modelo_Nave {
 
     constructor(ancho_Lienzo, alto_Lienzo) { 
         this.ancho_Lienzo = ancho_Lienzo;
-        this.alto_Lienzo  = alto_Lienzo;
+        this.alto_Lienzo =alto_Lienzo;
 
-        this.x           = ancho_Lienzo / 2;
-        this.y           = alto_Lienzo / 2;
-        this.angulo      = (- Math.PI) / 2;
-        this.radio       = 15;
+        this.x = ancho_Lienzo / 2;
+        this.y = alto_Lienzo / 2;
+        this.angulo = (- Math.PI) / 2;
+        this.radio = 15;
         this.velocidad_x = 0;
         this.velocidad_y = 0;
         
@@ -19,7 +19,7 @@ class Modelo_Nave {
     
     }
 
-    actualizar_Logica(teclas) {
+    actualizar_logica(teclas) {
 
         if(teclas['ArrowLeft']) this.angulo -= 0.05;
         if(teclas['ArrowRight']) this.angulo += 0.05;
@@ -35,10 +35,17 @@ class Modelo_Nave {
         this.x += this.velocidad_x;
         this.y += this.velocidad_y;
 
-        if (this.x < 0)                 this.x = this.ancho_Lienzo;
-        if (this.x > this.ancho_Lienzo)  this.x = 0;
-        if (this.y < 0)                 this.y = this.alto_Lienzo;
-        if (this.y > this.alto_Lienzo)   this.y = 0;
+        if (this.x < 0) 
+            this.x = this.ancho_Lienzo;
+
+        if (this.x > this.ancho_Lienzo) 
+            this.x = 0;
+
+        if (this.y < 0) 
+            this.y = this.alto_Lienzo;
+
+        if (this.y > this.alto_Lienzo) 
+            this.y = 0;
 
         }
 }   
@@ -54,7 +61,7 @@ class Modelo_Asteroide{
         this.y = Math.random() * alto_Lienzo;
         this.radio = Math.random() * 20 + 20;
         
-        const angulo_Aleatorio = Math.random() * Math.PI * 2;
+        const angulo_Aleatorio = Math.random()* Math.PI * 2;
         const velocidad_Aleatorio = Math.random() * 1.5 + 0.5;
 
         this.velocidad_x = Math.cos(angulo_Aleatorio) * velocidad_Aleatorio;
@@ -62,18 +69,24 @@ class Modelo_Asteroide{
     }
 
 
-    actualizar_Logica() {
+    actualizar_logica() {
         this.x += this.velocidad_x;
         this.y += this.velocidad_y;
 
-        if (this.x < -this.radio)                    this.x = this.ancho_Lienzo + this.radio;
-        if (this.x > this.ancho_Lienzo + this.radio)  this.x = -this.radio;
-        if (this.y < -this.radio)                    this.y = this.alto_Lienzo  + this.radio;
-        if (this.y > this.alto_Lienzo  + this.radio)  this.y = -this.radio;
+        if (this.x < -this.radio)                   
+            this.x = this.ancho_Lienzo + this.radio;
+
+        if (this.x > this.ancho_Lienzo + this.radio)
+            this.x = -this.radio;
+
+        if (this.y < -this.radio)
+            this.y = this.alto_Lienzo  + this.radio;
+
+        if (this.y > this.alto_Lienzo  + this.radio)
+            this.y = -this.radio;
     }
     
 }
-
 
 class Modelo_Disparo{
 
@@ -88,7 +101,7 @@ class Modelo_Disparo{
         this.tiempo_Vida = 60;
     }
 
-    actualizar_Logica(){
+    actualizar_logica(){
         this.x += this.velocidad_x;
         this.y += this.velocidad_y;
         this.tiempo_Vida--;
@@ -104,8 +117,6 @@ class Modelo_Juego {
     constructor(ancho, alto){
         this.ancho = ancho;
         this.alto = alto;
-
-        this.estado = 'CARGANDO';
 
         this.puntos = 0;
         this.top_puntajes = [];
@@ -126,7 +137,6 @@ class Modelo_Juego {
         this.estado = 'JUGANDO';
         this._crear_Objetos();
     }
-
 
     _crear_Objetos(){
         this.nave = new Modelo_Nave(this.ancho, this.alto);
