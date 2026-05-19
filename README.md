@@ -1,3 +1,5 @@
+https://docs.google.com/presentation/d/1QEvhPJTbtkk5sP3trxhWKgya8cDNkSO8/edit?usp=sharing&ouid=104109033859772190934&rtpof=true&sd=true
+
 # proyecto asteroids
 
 ## arquitectura del Proyecto
